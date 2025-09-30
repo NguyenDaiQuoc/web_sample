@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Social Buttons</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #d6d6d6;
+      font-family: Arial, sans-serif;
+    }
+
+    .social-container {
+      display: flex;
+      gap: 20px;
+      perspective: 1000px;
+    }
+
+    .social-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 25px;
+      background: #fff;
+      color: #333;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 6px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+      transform-style: preserve-3d;
+      transform: rotateX(10deg);
+      transition: all 0.3s ease;
+    }
+
+    .social-btn i {
+      font-size: 1.2rem;
+    }
+
+    /* Hover effect chung */
+    .social-btn:hover {
+      transform: rotateX(0deg) translateY(5px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+
+    /* Facebook */
+    .facebook:hover {
+      background: #3b5998;
+    }
+
+    /* Twitter */
+    .twitter:hover {
+      background: #1da1f2;
+    }
+
+    /* Google */
+    .google:hover {
+      background: #db4437;
+    }
+
+    /* Instagram */
+    .instagram:hover {
+      background: #e4405f;
+    }
+  </style>
+</head>
+<body>
+  <div class="social-container">
+    <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</a>
+    <a href="#" class="social-btn twitter"><i class="fab fa-twitter"></i> Twitter</a>
+    <a href="#" class="social-btn google"><i class="fab fa-google"></i> Google</a>
+    <a href="#" class="social-btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Hover Buttons</title>
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  height: 100vh;
+  background: #111;
+  font-family: sans-serif;
+}
+
+/* Nút chung */
+.button {
+  position: relative;
+  padding: 15px 50px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+/* 2 cục trên border */
+.button::before,
+.button::after {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  top: -7px;
+  transition: all 0.3s ease;
+}
+
+/* Vị trí cục */
+.button::before { left: 10px; }
+.button::after { right: 10px; }
+
+/* Nút 1 - Neon Pink */
+.btn1 {
+  border-color: #ff2dfd;
+  box-shadow: 0 0 5px #ff2dfd;
+}
+.btn1::before, .btn1::after {
+  background: #ff2dfd;
+  box-shadow: 0 0 10px #ff2dfd, 0 0 20px #ff2dfd;
+}
+.btn1:hover {
+  transform: translateY(-8px);
+  background: #ff2dfd;
+  color: #111;
+  box-shadow: 0 0 20px #ff2dfd, 0 0 40px #ff2dfd;
+}
+.btn1:hover::before {
+  transform: translateY(-8px) rotate(20deg);
+  background: #fff700;
+  box-shadow: 0 0 15px #fff700, 0 0 30px #fff700;
+}
+.btn1:hover::after {
+  transform: translateY(-8px) rotate(-20deg);
+  background: #00fff0;
+  box-shadow: 0 0 15px #00fff0, 0 0 30px #00fff0;
+}
+
+/* Nút 2 - Neon Green */
+.btn2 {
+  border-color: #00ff72;
+  box-shadow: 0 0 5px #00ff72;
+}
+.btn2::before, .btn2::after {
+  background: #00ff72;
+  box-shadow: 0 0 10px #00ff72, 0 0 20px #00ff72;
+}
+.btn2:hover {
+  transform: translateY(-8px);
+  background: #00ff72;
+  color: #111;
+  box-shadow: 0 0 20px #00ff72, 0 0 40px #00ff72;
+}
+.btn2:hover::before {
+  transform: translateY(-8px) rotate(30deg);
+  background: #ff0066;
+  box-shadow: 0 0 15px #ff0066, 0 0 30px #ff0066;
+}
+.btn2:hover::after {
+  transform: translateY(-8px) rotate(-30deg);
+  background: #ffdd00;
+  box-shadow: 0 0 15px #ffdd00, 0 0 30px #ffdd00;
+}
+
+/* Nút 3 - Neon Blue */
+.btn3 {
+  border-color: #00bfff;
+  box-shadow: 0 0 5px #00bfff;
+}
+.btn3::before, .btn3::after {
+  background: #00bfff;
+  box-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff;
+}
+.btn3:hover {
+  transform: translateY(-8px);
+  background: #00bfff;
+  color: #111;
+  box-shadow: 0 0 20px #00bfff, 0 0 40px #00bfff;
+}
+.btn3:hover::before {
+  transform: translateY(-8px) rotate(15deg);
+  background: #ff00ff;
+  box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
+}
+.btn3:hover::after {
+  transform: translateY(-8px) rotate(-15deg);
+  background: #00ffea;
+  box-shadow: 0 0 15px #00ffea, 0 0 30px #00ffea;
+}
+
+</style>
+</head>
+<body>
+
+<button class="button btn1">Neon Pink</button>
+<button class="button btn2">Neon Green</button>
+<button class="button btn3">Neon Blue</button>
+
+</body>
+</html>
