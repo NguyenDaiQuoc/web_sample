@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drone Delivery Button</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #0d0d16;
+      font-family: sans-serif;
+    }
+
+    .btn {
+  position: relative;
+  width: 280px;
+  height: 60px;
+  background: transparent;
+  border: 2px solid #00e6ff;
+  border-radius: 40px;
+  color: #00e6ff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  overflow: visible; /* <<< để drone bay ra ngoài vẫn thấy */
+  text-align: center;
+}
+
+@keyframes takeoff {
+  from { top: 50%; }
+  to   { top: -20px; } /* sát viền trên của nút */
+}
+
+@keyframes flyLine {
+  0%   { left: 15px; top: -20px; }
+  100% { left: calc(100% - 50px); top: -20px; }
+}
+    .btn span {
+      position: relative;
+      z-index: 2;
+      line-height: 56px;
+      transition: .3s;
+    }
+
+    /* Hộp chứa drone */
+    .dock {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      font-size: 22px;
+      opacity: 1;
+      transition: opacity .3s;
+      z-index: 3;
+    }
+    .btn.fly .dock { opacity: 0; }
+
+    /* Progress bar */
+    .progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: rgba(0, 230, 255, 0.2);
+      transition: width 3s linear;
+      z-index: 1;
+    }
+
+    /* Drone */
+    .drone {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      transform: translateY(-50%);
+      z-index: 20; /* luôn nổi trên cùng */
+      opacity: 0;
+    }
+
+    .btn.fly .drone {
+      opacity: 1;
+      animation: takeoff 0.5s ease forwards, flyLine 3s linear forwards 0.5s;
+    }
+
+
+
+    /* Package */
+    .package {
+      position: absolute;
+      left: calc(100% - 40px); /* cuối bên phải */
+      top: -30px;              /* bắt đầu trên */
+      width: 30px;
+      height: 30px;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    .btn.fly .package {
+      animation: drop 0.8s ease forwards;
+      animation-delay: 3.6s;
+    }
+
+    /* rơi xuống giữa nút (theo chiều dọc) */
+    @keyframes drop {
+      0% { transform: translateY(-120%); opacity: 0; }
+      50% { transform: translateY(20%); opacity: 1; }
+      100% { transform: translateY(45px); opacity: 1; } /* giữa top-bottom của nút */
+    }
+
+    /* Shake effect */
+    .btn.shake .package { animation: shake 0.4s ease; }
+    @keyframes shake {
+      0% { transform: translateY(45px); }
+      25% { transform: translateY(41px); }
+      50% { transform: translateY(49px); }
+      75% { transform: translateY(43px); }
+      100% { transform: translateY(45px); }
+    }
+
+    /* Success */
+    .btn.success {
+      border-color: #19f6e3;
+      color: #19f6e3;
+    }
+  </style>
+</head>
+<body>
+  <button class="btn" id="submitBtn">
+    <span>🛫 Submit</span>
+    <div class="dock">📦</div>
+    <div class="progress"></div>
+    <div class="drone">🚁</div>
+    <div class="package">
+      <svg viewBox="0 0 64 64">
+        <rect x="16" y="20" width="32" height="24" fill="#FFD54F" stroke="#fff" stroke-width="2"/>
+        <line x1="16" y1="32" x2="48" y2="32" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </div>
+  </button>
+
+  <script>
+    const btn = document.getElementById("submitBtn");
+    const text = btn.querySelector("span");
+    const progressBar = btn.querySelector(".progress");
+
+    function buzz() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 3.2);
+    }
+
+    function pop() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(400, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    }
+
+    btn.addEventListener("click", () => {
+      if (btn.classList.contains("fly")) return;
+      btn.classList.add("fly");
+      buzz();
+
+      progressBar.style.width = "100%";
+
+      let progress = 0;
+      let interval = setInterval(() => {
+        progress += 5;
+        if (progress <= 100) {
+          if (progress < 50) {
+            text.textContent = "Processing...";
+          } else {
+            text.textContent = "It's on the way...";
+          }
+        }
+      }, 150);
+
+      // Khi drone bay xong + thả package
+      setTimeout(() => {
+        clearInterval(interval);
+        text.textContent = "📦 Delivered!";
+        btn.classList.add("success", "shake");
+        pop();
+      }, 4400);
+
+      // Reset
+      setTimeout(() => {
+        btn.classList.remove("fly", "success", "shake");
+        progressBar.style.width = "0%";
+        text.textContent = "🛫 Submit";
+      }, 7500);
+    });
+  </script>
+</body>
+</html>

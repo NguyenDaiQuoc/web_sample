@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analog Clock</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #111;
+    }
+    .clock {
+      width: 300px;
+      height: 300px;
+      border: 8px solid white;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle, #222, #000);
+    }
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom;
+      transform: translateX(-50%) rotate(90deg);
+      transition: transform 0.05s linear;
+    }
+    .hour {
+      width: 6px;
+      height: 70px;
+      background: orange;
+    }
+    .minute {
+      width: 4px;
+      height: 100px;
+      background: cyan;
+    }
+    .second {
+      width: 2px;
+      height: 120px;
+      background: crimson;
+    }
+    .center {
+      width: 14px;
+      height: 14px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .number {
+      position: absolute;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      transform: translate(-50%, -50%);
+    }
+    .number[data-num="12"] { top: 25px; left: 50%; }
+    .number[data-num="3"] { right: 25px; top: 50%; }
+    .number[data-num="6"] { bottom: 25px; left: 50%; }
+    .number[data-num="9"] { left: 25px; top: 50%; }
+
+    /* Vạch chia */
+    .tick {
+      position: absolute;
+      width: 2px;
+      height: 10px;
+      background: white;
+      top: 10px;
+      left: 50%;
+      transform-origin: center 140px; /* bán kính đồng hồ */
+    }
+    .tick.big {
+      height: 20px;
+      background: yellow;
+    }
+
+    /* Digital clock */
+    .digital {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 22px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clock">
+    <div class="hand hour" id="hour"></div>
+    <div class="hand minute" id="minute"></div>
+    <div class="hand second" id="second"></div>
+    <div class="center"></div>
+    <div class="number" data-num="12" style="top:37px">12</div>
+    <div class="number" data-num="3">3</div>
+    <div class="number" data-num="6" style="bottom:17px">6</div>
+    <div class="number" data-num="9" style="left: 35px;">9</div>
+    <div class="digital" id="digital"></div>
+  </div>
+
+  <script>
+    // Thêm vạch chia
+    const clock = document.getElementById("clock");
+    for (let i = 0; i < 60; i++) {
+      const tick = document.createElement("div");
+      tick.classList.add("tick");
+      if (i % 5 === 0) tick.classList.add("big");
+      tick.style.transform = `rotate(${i * 6}deg) translateX(-50%)`;
+      clock.appendChild(tick);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      const secDeg = (seconds / 60) * 360;
+      const minDeg = ((minutes + seconds / 60) / 60) * 360;
+      const hourDeg = ((hours % 12 + minutes / 60 + seconds / 3600) / 12) * 360;
+
+      document.getElementById("second").style.transform = `translateX(-50%) rotate(${secDeg}deg)`;
+      document.getElementById("minute").style.transform = `translateX(-50%) rotate(${minDeg}deg)`;
+      document.getElementById("hour").style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+
+      document.getElementById("digital").textContent = now.toLocaleTimeString();
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>

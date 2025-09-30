@@ -1,0 +1,169 @@
+<?php
+session_start();
+include("admincp/config/config.php");
+
+$login_success = null;
+
+// AUTO LOGIN nếu có cookie (remember)
+if (!isset($_SESSION['idkhachhang']) && isset($_COOKIE['remember_email']) && isset($_COOKIE['remember_pass'])) {
+    $cookie_email = mysqli_real_escape_string($mysqli, $_COOKIE['remember_email']);
+    $cookie_pass  = mysqli_real_escape_string($mysqli, $_COOKIE['remember_pass']);
+    $q = mysqli_query($mysqli, "SELECT * FROM tbl_dangky WHERE email = '$cookie_email' AND matkhau = '$cookie_pass' AND trangthai = 1 LIMIT 1");
+    if ($q && mysqli_num_rows($q) > 0) {
+        $r = mysqli_fetch_array($q);
+        $_SESSION['dangky']      = $r['tenkhachhang'];
+        $_SESSION['email']       = $r['email'];
+        $_SESSION['idkhachhang'] = $r['iddangky'];
+        header("Location: index.php");
+        exit;
+    }
+}
+
+// XỬ LÝ LOGIN
+if (isset($_POST['dangNhap'])) {
+    $email          = mysqli_real_escape_string($mysqli, trim($_POST['email']));
+    $plain_password = $_POST['matkhau'];
+    $matkhau        = md5($plain_password);
+    $remember       = isset($_POST['remember']) ? true : false;
+
+    $sql   = "SELECT * FROM tbl_dangky WHERE email = '$email' AND matkhau = '$matkhau' AND trangthai = 1 LIMIT 1";
+    $query = mysqli_query($mysqli, $sql);
+
+    if ($query && mysqli_num_rows($query) > 0) {
+        $row = mysqli_fetch_array($query);
+        $_SESSION['dangky']      = $row['tenkhachhang'];
+        $_SESSION['email']       = $row['email'];
+        $_SESSION['idkhachhang'] = $row['iddangky'];
+
+        if ($remember) {
+            setcookie("remember_email", $email, time() + 60 * 60 * 24 * 30, "/");
+            setcookie("remember_pass", $matkhau, time() + 60 * 60 * 24 * 30, "/");
+        } else {
+            setcookie("remember_email", "", time() - 3600, "/");
+            setcookie("remember_pass", "", time() - 3600, "/");
+        }
+
+        header("Location: index.php");
+        exit;
+    } else {
+        $login_success = false;
+    }
+}
+
+$remembered_email   = isset($_COOKIE['remember_email']) ? htmlspecialchars($_COOKIE['remember_email']) : "";
+$remembered_checked = $remembered_email ? 'checked' : '';
+?>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Đăng nhập</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons.js"></script>
+</head>
+<body class="antialiased">
+<div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+  <div class="w-full max-w-4xl mx-4">
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden md:flex relative">
+      <!-- LEFT overlay panel -->
+      <div class="hidden md:flex md:w-1/2 items-center justify-center p-8 bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 text-white">
+        <div class="space-y-6 text-center px-6">
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" 
+               alt="promo" 
+               class="w-48 h-48 object-cover rounded-xl mx-auto shadow-xl">
+          <h3 class="text-2xl font-bold">Chào mừng trở lại!</h3>
+          <p class="text-sm opacity-90">Mua sắm nhanh — giá tốt — giao hàng tận nơi. Nếu chưa có tài khoản, bạn có thể đăng ký ngay.</p>
+          <a href="dangky.php" class="px-4 py-2 bg-white/30 rounded-lg hover:bg-white/40 transition">Đăng ký</a>
+        </div>
+      </div>
+
+      <!-- RIGHT login form -->
+      <div class="w-full md:w-1/2 p-6 md:p-8 relative">
+        <button onclick="closeModal()" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">✕</button>
+        
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Đăng nhập</h2>
+        <form method="POST" class="space-y-4">
+          <div>
+            <label class="block text-gray-600 text-sm">Email</label>
+            <input type="email" name="email" value="<?php echo $remembered_email;?>" required 
+                   class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none"
+                   tabindex="1">
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm">Mật khẩu</label>
+            <div class="relative">
+              <input type="password" name="matkhau" id="loginPassword" required 
+                     class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none"
+                     oninput="checkPassword(this.value)"
+                     tabindex="2">
+              <button type="button" onclick="togglePassword('loginPassword','eyeIcon')" 
+                      class="absolute right-3 top-3 text-gray-600">
+                <ion-icon id="eyeIcon" name="eye-outline" class="text-xl"></ion-icon>
+              </button>
+            </div>
+            <ul id="passwordRules" class="text-xs mt-2 space-y-1 text-gray-500">
+              <li id="rule-length">✗ Ít nhất 6 ký tự</li>
+              <li id="rule-number">✗ Có ít nhất 1 số</li>
+              <li id="rule-upper">✗ Có ít nhất 1 chữ hoa</li>
+              <li id="rule-lower">✗ Có ít nhất 1 chữ thường</li>
+            </ul>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="remember" <?php echo $remembered_checked;?>> Ghi nhớ đăng nhập
+            </label>
+            <a href="index.php?quanly=quenmatkhau" class="text-indigo-600 text-sm hover:underline">Quên mật khẩu?</a>
+          </div>
+          <?php if ($login_success === false): ?>
+            <p class="text-red-500 text-sm text-center">Email hoặc mật khẩu không đúng.</p>
+          <?php endif; ?>
+          <button type="submit" name="dangNhap" 
+                  class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+                  tabindex="3">
+            Đăng nhập
+          </button>
+          <p class="text-sm text-center text-gray-600">
+            Chưa có tài khoản? <a href="dangky.php" class="text-indigo-600 hover:underline">Đăng ký</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function closeModal() {
+  document.getElementById('loginModal').style.display = 'none';
+}
+function togglePassword(inputId, eyeId) {
+  const passwordInput = document.getElementById(inputId);
+  const eyeIcon = document.getElementById(eyeId);
+
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    eyeIcon.setAttribute("name", "eye-off-outline");
+  } else {
+    passwordInput.type = "password";
+    eyeIcon.setAttribute("name", "eye-outline");
+  }
+}
+function checkPassword(value) {
+  document.getElementById("rule-length").style.color = value.length >= 6 ? "green" : "red";
+  document.getElementById("rule-length").textContent = (value.length >= 6 ? "✓" : "✗") + " Ít nhất 6 ký tự";
+
+  const hasNumber = /\d/.test(value);
+  document.getElementById("rule-number").style.color = hasNumber ? "green" : "red";
+  document.getElementById("rule-number").textContent = (hasNumber ? "✓" : "✗") + " Có ít nhất 1 số";
+
+  const hasUpper = /[A-Z]/.test(value);
+  document.getElementById("rule-upper").style.color = hasUpper ? "green" : "red";
+  document.getElementById("rule-upper").textContent = (hasUpper ? "✓" : "✗") + " Có ít nhất 1 chữ hoa";
+
+  const hasLower = /[a-z]/.test(value);
+  document.getElementById("rule-lower").style.color = hasLower ? "green" : "red";
+  document.getElementById("rule-lower").textContent = (hasLower ? "✓" : "✗") + " Có ít nhất 1 chữ thường";
+}
+</script>
+</body>
+</html>

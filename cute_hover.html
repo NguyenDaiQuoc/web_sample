@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hover Button Effect</title>
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f0f0f0;
+}
+
+/* Nút chính */
+.button {
+  position: relative;
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background: #ff6f61;
+  border: 2px solid #ff6f61;
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 2 cục trên border */
+.button::before,
+.button::after {
+  content: '';
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border-radius: 50%;
+  top: -7px; /* nằm trên viền */
+  transition: all 0.3s ease;
+}
+
+.button::before {
+  left: 10px;
+}
+
+.button::after {
+  right: 10px;
+}
+
+/* Hover effect */
+.button:hover {
+  transform: translateY(-5px);
+  background: #ff3b2f;
+  border-color: #ff3b2f;
+}
+
+.button:hover::before {
+  transform: translateY(-5px) rotate(20deg);
+  background: #ffe066;
+}
+
+.button:hover::after {
+  transform: translateY(-5px) rotate(-20deg);
+  background: #ffe066;
+}
+</style>
+</head>
+<body>
+
+<button class="button">Hover Me</button>
+
+</body>
+</html>

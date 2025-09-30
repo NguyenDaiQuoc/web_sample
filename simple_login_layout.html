@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+  <style> 
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+    }
+    body{
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #212121;
+    }
+    .container{
+        border: 1px solid #8d8d8d;
+        padding: 20px;
+        border-radius: 15px;
+        background-color: #fff;
+    }
+    .container .heading{
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        font-weight: bolder;
+    }
+    .form{
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .form .btn-container{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .form .btn{
+        padding: 10px 20px;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        border-radius: 8px;
+        border: 1px solid #1034aa;
+        border-bottom: 1px solid #90c2ff;
+        background: linear-gradient(135deg,#0034de,#006eff);
+        color: #fff;
+        font-weight: bolder;
+        transition: all 0.2s ease;
+        box-shadow: 0px 2px 3px #000d3848, inset 0px 4px 5px #0070f0, inset 0px -4px 5px #002cbb;
+    }
+    .form .btn:active{
+        box-shadow: inset 0px 4px 5px #0070f0, inset 0px -4px 5px #002cbb;
+        transform: scale(0.995);
+    }
+
+    /* input + floating label */
+    .input-field{
+        position: relative;
+    }
+    .input-field input{
+        padding: 12px 15px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #8d8d8d;
+        width: 100%;
+        outline: none;
+    }
+    .input-field label{
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #8d8d8d;
+        font-size: 1rem;
+        pointer-events: none;
+        transition: 0.3s ease;
+        background: #fff;
+        padding: 0 5px;
+    }
+    .input-field input:focus + label,
+    .input-field input:valid + label{
+        top: -8px;
+        left: 10px;
+        font-size: 0.8rem;
+        color: #0034de;
+        font-weight: bold;
+    }
+
+    .link{
+        font-size: 0.8rem;
+    }
+    .link a{
+        text-decoration: none;
+        color: #0034de;
+        font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="heading">Login to your account</div>
+    <form class="form">
+      <div class="input-field">
+        <input type="text" required>
+        <label>Full name</label>
+      </div>
+      <div class="input-field">
+        <input type="email" required>
+        <label>Email</label>
+      </div>
+      <div class="input-field">
+        <input type="password" required>
+        <label>Password</label>
+      </div>
+      <div class="btn-container">
+        <button type="submit" class="btn">Submit</button>
+        <div class="link">
+          New here? <a href="#">Create Account</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

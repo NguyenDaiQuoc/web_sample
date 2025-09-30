@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rounded Navigation Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f1f1f1;
+    }
+
+    /* Vùng chứa menu */
+    .menu {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    /* Nút chính (dấu +) */
+    .menu .toggle {
+      width: 70px;
+      height: 70px;
+      background: #4a6fa1;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.4s ease;
+    }
+
+    /* Xoay + thành x */
+    .menu.active .toggle {
+      transform: rotate(45deg);
+    }
+
+    /* Danh sách icon con */
+    .menu ul {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu ul li {
+      position: absolute;
+      /* ban đầu ẩn (nằm ở giữa, scale nhỏ, mờ) */
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      transition-delay: calc(var(--i) * 0.1s); /* delay theo thứ tự */
+    }
+
+    /* Khi active thì bung ra theo vòng tròn */
+    .menu.active ul li {
+      transform: translate(-50%, -50%) 
+                 rotate(calc(360deg / 6 * var(--i))) 
+                 translate(120px) 
+                 rotate(calc(-360deg / 6 * var(--i))) 
+                 scale(1);
+      opacity: 1;
+    }
+
+    /* Style từng icon */
+    .menu ul li a {
+      width: 60px;
+      height: 60px;
+      background: #4a6fa1;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 1.5rem;
+      transition: 0.3s;
+      position: relative;
+    }
+
+    /* Hover đổi màu */
+    .menu ul li a:hover {
+      background: white;
+      color: black;
+    }
+
+    /* Tooltip chữ */
+    .menu ul li a span {
+      position: absolute;
+      top: -30px;
+      font-size: 0.8rem;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 3px 6px;
+      border-radius: 4px;
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: 0.3s;
+    }
+
+    .menu ul li a:hover span {
+      opacity: 1;
+      transform: translateY(-10px);
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <!-- nút chính -->
+    <div class="toggle"><i class="fas fa-plus"></i></div>
+    <ul>
+      <li style="--i:0;"><a href="#"><i class="fas fa-home"></i><span>Home</span></a></li>
+      <li style="--i:1;"><a href="#"><i class="fas fa-store"></i><span>Shop</span></a></li>
+      <li style="--i:2;"><a href="#"><i class="fas fa-city"></i><span>City</span></a></li>
+      <li style="--i:3;"><a href="#"><i class="fas fa-university"></i><span>Bank</span></a></li>
+      <li style="--i:4;"><a href="#"><i class="fas fa-school"></i><span>School</span></a></li>
+      <li style="--i:5;"><a href="#"><i class="fas fa-industry"></i><span>Factory</span></a></li>
+    </ul>
+  </div>
+
+  <script>
+    const menu = document.querySelector('.menu');
+    const toggle = document.querySelector('.toggle');
+    toggle.onclick = () => {
+      menu.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>

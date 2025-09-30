@@ -1,0 +1,302 @@
+import React, { useState, useEffect } from "react";
+import { Search, ShoppingCart, Facebook, User, ShoppingBag, ArrowUp } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function GroceryStorePreview() {
+  // sample product list (merged from your original HTML sample)
+  const initialProducts = Array.from({ length: 30 }).map((_, i) => {
+    const id = i + 1;
+    const price = Math.floor(Math.random() * 90000) + 10000;
+    const oldPrice = price + Math.floor(Math.random() * 40000) + 20000;
+    return {
+      id,
+      name: `Sản phẩm #${id}`,
+      price,
+      oldPrice,
+      img: `https://picsum.photos/seed/p${id}/600/480`
+    };
+  });
+
+  const [products] = useState(initialProducts);
+  const [shown, setShown] = useState(8);
+  const [query, setQuery] = useState("");
+  const [filtered, setFiltered] = useState(products.slice(0, shown + 8));
+  const [chatOpen, setChatOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { who: "bot", text: "Xin chào! Mình là trợ lý. Bạn cần giúp gì?" }
+  ]);
+  const siteRoot = "https://nhahaidua.byethost31.com"; // your site root
+
+  useEffect(() => {
+    applyFilter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, shown]);
+
+  function formatVND(n) {
+    // avoid regex to keep this string safe for canvas updates
+    return Number(n).toLocaleString('vi-VN') + '₫';
+  }
+
+  function percent(p) {
+    return Math.round((1 - p.price / p.oldPrice) * 100);
+  }
+
+  function applyFilter() {
+    if (!query.trim()) {
+      const all = products.slice(0, Math.min(products.length, shown + 8));
+      setFiltered(all);
+      return;
+    }
+    const q = query.trim().toLowerCase();
+    const res = products.filter((p) => p.name.toLowerCase().includes(q));
+    setFiltered(res);
+  }
+
+  function handleSearch(e) {
+    e && e.preventDefault();
+    applyFilter();
+  }
+
+  function loadMore() {
+    setShown((s) => Math.min(products.length, s + 8));
+    setTimeout(() => applyFilter(), 120);
+  }
+
+  function buyNow(p) {
+    // open the product page / add-to-cart route on your real site
+    window.open(`${siteRoot}/index.php?quanly=themgiohang&id=${p.id}`, "_blank", "noopener");
+  }
+
+  function openProduct(p) {
+    window.open(`${siteRoot}/index.php?quanly=sanpham&id=${p.id}`, "_blank", "noopener");
+  }
+
+  function sendChat(text) {
+    if (!text.trim()) return;
+    setMessages((m) => [...m, { who: "user", text }]);
+    setTimeout(() => {
+      const q = text.toLowerCase();
+      let answer = "Mình chưa hiểu rõ. Thử hỏi: 'Giá sữa', 'Hướng dẫn đặt hàng'";
+      if (q.includes("giá")) answer = "Giá hiển thị ở trang chi tiết. Muốn mình mở sản phẩm nào?";
+      if (q.includes("đặt") || q.includes("mua")) answer = "Bạn có thể nhấn 'Mua ngay' trên sản phẩm. Mình có thể chuyển bạn tới giỏ hàng.";
+      if (q.includes("khuyến") || q.includes("sale")) answer = "Mục Khuyến mãi đang cập nhật. Muốn xem mục giảm giá không?";
+      setMessages((m) => [...m, { who: "bot", text: answer }]);
+    }, 600);
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      {/* Header */}
+      <header className="bg-white sticky top-0 z-40 shadow-sm">
+        <div className="container mx-auto flex items-center gap-4 p-4">
+          <a href={siteRoot} target="_blank" rel="noreferrer" className="flex items-center gap-3">
+            <img src={`${siteRoot}/images/logo.png`} alt="logo" className="w-14 h-14 rounded-lg object-cover shadow-sm" />
+            <div>
+              <div className="text-lg font-bold">Tiệm Tạp Hóa</div>
+              <div className="text-sm text-gray-500">Hàng tươi - Giá tốt</div>
+            </div>
+          </a>
+
+          <form onSubmit={handleSearch} className="flex-1">
+            <div className="flex bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="flex-1 px-4 py-2 outline-none"
+                placeholder="Tìm sản phẩm, danh mục..."
+                aria-label="Tìm sản phẩm"
+              />
+              <button type="submit" className="px-4 py-2 bg-orange-500 text-white flex items-center">
+                <Search size={16} />
+                <span className="ml-2">Tìm</span>
+              </button>
+            </div>
+          </form>
+
+          <div className="flex items-center gap-3">
+            <a href="https://tiktok.com" target="_blank" rel="noreferrer" className="p-2 rounded hover:bg-gray-100">
+              <img src="/tiktok.svg" alt="tiktok" className="w-5 h-5" />
+            </a>
+            <a href="https://shopee.vn" target="_blank" rel="noreferrer" className="p-2 rounded hover:bg-gray-100">
+              <img src="/shopee.svg" alt="shopee" className="w-5 h-5" />
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="p-2 rounded hover:bg-gray-100">
+              <Facebook size={18} />
+            </a>
+
+            <a href={`${siteRoot}/index.php?quanly=giohang`} target="_blank" rel="noreferrer" className="p-2 rounded hover:bg-gray-100 relative">
+              <ShoppingCart size={20} />
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1">2</span>
+            </a>
+
+            <div className="flex items-center gap-2">
+              <img src={`${siteRoot}/images/guest.png`} alt="guest" className="w-9 h-9 rounded-full object-cover border" />
+              <div className="flex flex-col">
+                <a href={`${siteRoot}/index.php?quanly=dangnhap`} className="text-sm font-medium text-orange-500">Đăng nhập</a>
+                <a href={`${siteRoot}/index.php?quanly=dangky`} className="text-xs text-gray-500">Đăng ký</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav className="bg-white border-t">
+          <div className="container mx-auto flex gap-6 p-3 text-sm">
+            <a href={siteRoot} className="text-orange-500 font-semibold">Trang chủ</a>
+            <a href={`${siteRoot}/index.php?quanly=sanpham`} className="text-gray-600">Sản phẩm</a>
+            <a href={`${siteRoot}/index.php?quanly=tintuc`} className="text-gray-600">Tin tức</a>
+            <a href={`${siteRoot}/index.php?quanly=lienhe`} className="text-gray-600">Liên hệ</a>
+          </div>
+        </nav>
+      </header>
+
+      {/* Layout */}
+      <div className="container mx-auto py-6 grid grid-cols-12 gap-6">
+        {/* Sidebar */}
+        <aside className="col-span-12 lg:col-span-3">
+          <div className="bg-white rounded-2xl p-4 shadow-sm sticky top-28">
+            <h4 className="font-semibold mb-3">Danh mục sản phẩm</h4>
+            <ul className="space-y-2 text-sm">
+              {[
+                { id: 1, name: "Khuyến mãi sốc" },
+                { id: 2, name: "Hàng mới về" },
+                { id: 3, name: "Thời trang" },
+                { id: 4, name: "Chăm sóc cá nhân" },
+                { id: 5, name: "Vệ sinh nhà cửa" }
+              ].map((c) => (
+                <li key={c.id} className="p-2 rounded hover:bg-gray-50">
+                  <a href={`${siteRoot}/index.php?quanly=danhmuc&id=${c.id}`} target="_blank" rel="noreferrer">{c.name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <main className="col-span-12 lg:col-span-9">
+          <section className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Hàng mới về</h3>
+              <div className="text-sm text-gray-500">Hiển thị <span className="font-medium">{filtered.length}</span> sản phẩm</div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filtered.map((p) => (
+                <motion.article key={p.id} whileHover={{ translateY: -6 }} className="bg-white rounded-2xl p-3 shadow-sm flex flex-col">
+                  <div className="h-44 rounded-lg overflow-hidden mb-3 cursor-pointer" onClick={() => openProduct(p)}>
+                    <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm h-12 overflow-hidden">{p.name}</div>
+                    <div className="flex items-center justify-between mt-3">
+                      <div>
+                        <div className="text-orange-500 font-bold">{formatVND(p.price)}</div>
+                        <div className="text-xs text-gray-400 line-through">{formatVND(p.oldPrice)}</div>
+                      </div>
+                      <div className="bg-orange-50 text-orange-600 px-2 py-1 rounded text-sm font-semibold">-{percent(p)}%</div>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <button onClick={() => buyNow(p)} className="w-full py-2 rounded-xl bg-orange-500 text-white font-semibold">Mua ngay</button>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={loadMore}
+                disabled={shown >= products.length}
+                className="px-4 py-2 rounded-xl bg-white border"
+              >
+                {shown < products.length ? "Xem thêm sản phẩm" : "Đã tải hết"}
+              </button>
+            </div>
+          </section>
+
+          {/* Sale section */}
+          <section className="mb-8">
+            <h3 className="text-xl font-semibold mb-4">Sale sốc</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {products.filter((_, i) => i % 5 === 0).slice(0, 8).map((p) => (
+                <article key={p.id} className="bg-white rounded-2xl p-3 shadow-sm">
+                  <div className="h-40 rounded-lg overflow-hidden mb-3">
+                    <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="font-semibold text-sm">{p.name}</div>
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="text-orange-500 font-bold">{formatVND(p.price)}</div>
+                    <div className="bg-orange-50 text-orange-600 px-2 py-1 rounded text-sm">-{percent(p)}%</div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+        </main>
+      </div>
+
+      {/* Chat widget + toggle + scroll-to-top */}
+      <div>
+        <div className={`fixed right-6 bottom-6 z-50 ${chatOpen ? "hidden" : ""}`}>
+          <button onClick={() => setChatOpen(true)} className="w-14 h-14 rounded-full bg-orange-500 text-white shadow-lg flex items-center justify-center">
+            <ShoppingBag size={20} />
+          </button>
+        </div>
+
+        <div className={`fixed right-6 bottom-6 w-96 max-w-full z-50 ${chatOpen ? "block" : "hidden"}`}>
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-500 to-orange-400 text-white">
+              <div className="w-10 h-10 bg-white/20 rounded p-1 flex items-center justify-center">TB</div>
+              <div>
+                <div className="font-semibold">Hỗ trợ trực tuyến</div>
+                <div className="text-xs">Mình có thể giúp gì cho bạn?</div>
+              </div>
+              <button onClick={() => setChatOpen(false)} className="ml-auto text-white/80">Đóng</button>
+            </div>
+            <div className="p-3 h-64 overflow-auto bg-gray-50">
+              {messages.map((m, i) => (
+                <div key={i} className={`mb-2 ${m.who === "user" ? "text-right" : "text-left"}`}>
+                  <div className={`inline-block px-3 py-2 rounded-xl ${m.who === "user" ? "bg-orange-500 text-white" : "bg-white shadow"}`}>{m.text}</div>
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t flex gap-2">
+              <input id="chatInput" type="text" placeholder="Gõ tin nhắn..." className="flex-1 rounded-xl border px-3 py-2" onKeyDown={(e) => { if (e.key === 'Enter') sendChat(e.target.value); }} />
+              <button onClick={() => { const el = document.getElementById('chatInput'); sendChat(el.value); el.value = ''; }} className="bg-orange-500 text-white px-4 py-2 rounded-xl">Gửi</button>
+            </div>
+          </div>
+        </div>
+
+        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="fixed right-6 bottom-24 w-12 h-12 rounded-lg bg-white shadow-md flex items-center justify-center">
+          <ArrowUp size={18} />
+        </button>
+      </div>
+
+      {/* Footer */}
+      <footer className="mt-12 bg-white border-t">
+        <div className="container mx-auto py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div>
+            <h4 className="font-semibold">Về chúng tôi</h4>
+            <p className="text-sm text-gray-500">Tiệm tạp hoá bán lẻ - giao nhanh trong ngày.</p>
+          </div>
+          <div>
+            <h4 className="font-semibold">Hỗ trợ</h4>
+            <ul className="text-sm text-gray-500 space-y-2">
+              <li>Chính sách đổi trả</li>
+              <li>Hướng dẫn mua hàng</li>
+              <li>Thanh toán & vận chuyển</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold">Liên hệ</h4>
+            <p className="text-sm text-gray-500">Hotline: 0123 456 789</p>
+          </div>
+          <div>
+            <h4 className="font-semibold">Đăng ký nhận tin</h4>
+            <input placeholder="Email của bạn" className="w-full rounded-xl border px-3 py-2 text-sm" />
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

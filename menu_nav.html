@@ -1,0 +1,174 @@
+<!-- Icon-only Nav with hover-to-show labels + underline animation
+     - HTML comments explain structure
+     - CSS comments ("/* ... */") giải thích từng phần
+-->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Icon Nav: hover → show text</title>
+
+  <!-- Font Awesome CDN (icon) -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ---------- Page / container ---------- */
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#0b1220; /* dark background */
+      font-family:Inter, "Poppins", system-ui, sans-serif;
+    }
+
+    /* ---------- Nav wrapper (pill) ---------- */
+    .nav {
+      display:flex;
+      gap:28px;                     /* space between items */
+      padding:14px 22px;            /* internal spacing */
+      background:#111827;           /* pill background */
+      border-radius:28px;           /* rounded pill */
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      align-items:center;
+    }
+
+    /* ---------- Each nav item (link) ---------- */
+    .nav a{
+      position:relative;            /* for absolute label & underline */
+      width:54px;                   /* icon container width */
+      height:54px;                  /* icon container height */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#93a2b8;                /* icon color (idle) */
+      text-decoration:none;
+      border-radius:12px;
+      transition: color .22s ease, transform .18s ease;
+      outline: none;
+    }
+
+    /* make focus (keyboard) behave same as hover */
+    .nav a:focus { outline: none; }
+
+    /* icon inside item */
+    .nav a .icon{
+      font-size:20px;
+      line-height:1;
+      transition: transform .18s ease, color .18s ease;
+    }
+
+    /* ---------- Hidden label (tooltip-like) ----------
+       - Positioned under the icon
+       - Hidden by default (opacity:0, translateY down)
+       - On hover/focus it's visible and slides up
+    */
+    .nav a .label{
+      position:absolute;
+      bottom:-42px;                 /* place below the pill */
+      left:50%;
+      transform:translate(-50%, 10px); /* start slightly lower */
+      background: #0b1220;          /* small dark bubble */
+      color: #9be8ff;               /* label color when visible */
+      padding:7px 10px;
+      border-radius:8px;
+      font-size:13px;
+      white-space:nowrap;
+      opacity:0;
+      pointer-events:none;          /* no mouse events */
+      box-shadow: 0 8px 20px rgba(2,6,23,0.6);
+      transition: opacity .25s cubic-bezier(.2,.9,.3,1),
+                  transform .28s cubic-bezier(.2,.9,.3,1);
+      z-index: 5;
+    }
+
+    /* ---------- Underline indicator (centered under icon) ----------
+       - hidden (width:0) by default, expand on hover/focus
+    */
+    .nav a::after{
+      content:"";
+      position:absolute;
+      bottom:-12px;
+      left:50%;
+      transform:translateX(-50%);
+      width:0%;
+      height:4px;
+      background: linear-gradient(90deg,#7ee7ff,#4cc9ff);
+      border-radius:4px;
+      transition: width .26s cubic-bezier(.2,.9,.3,1);
+      z-index:4;
+    }
+
+    /* ---------- Hover / Focus / Active states ----------
+       - show label, color icon, expand underline, slight lift
+    */
+    .nav a:hover .label,
+    .nav a:focus .label,
+    .nav a.active .label {
+      opacity:1;
+      transform:translate(-50%, 0); /* slide up into view */
+    }
+
+    .nav a:hover .icon,
+    .nav a:focus .icon,
+    .nav a.active .icon {
+      color:#ffffff;                /* icon becomes white on hover */
+      transform: translateY(-3px);  /* small lift */
+    }
+
+    .nav a:hover::after,
+    .nav a:focus::after,
+    .nav a.active::after {
+      width:56%;                    /* underline expands to 56% of item width */
+    }
+
+    /* ---------- Optional: highlight background behind hovered icon ---------- */
+    .nav a:hover,
+    .nav a:focus,
+    .nav a.active {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+
+    /* ---------- Responsive: center nav on very small screens ---------- */
+    @media (max-width:420px){
+      .nav{ gap:14px; padding:10px; }
+      .nav a{ width:48px; height:48px; }
+      .nav a .label{ font-size:12px; bottom:-38px; padding:6px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV: icon-only by default.
+       - each <a> has: .icon (fontawesome) + .label (hidden text)
+       - add class="active" to the currently selected item
+       - tabindex="0" allows keyboard focus (space/enter will focus but not activate link)
+  -->
+  <nav class="nav" role="navigation" aria-label="Main">
+    <a href="#" tabindex="0">
+      <i class="icon fa-solid fa-house"></i>
+      <span class="label">Home</span>
+    </a>
+
+    <a href="#" tabindex="0">
+      <i class="icon fa-solid fa-briefcase"></i>
+      <span class="label">Work</span>
+    </a>
+
+    <a href="#" tabindex="0">
+      <i class="icon fa-solid fa-envelope"></i>
+      <span class="label">Messages</span>
+    </a>
+
+    <a href="#" tabindex="0">
+      <i class="icon fa-solid fa-gear"></i>
+      <span class="label">Settings</span>
+    </a>
+  </nav>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nav Menu - Fade In</title>
+  <style>
+    body { background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+    .nav {
+      display: flex;
+      gap: 20px;
+      background: #333;
+      padding: 15px 20px;
+      border-radius: 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      color: white;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 22px;
+      margin-right: 5px;
+    }
+
+    .nav-item span {
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .nav-item:hover span {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="nav">
+    <span>Khi hover vào icon thì text trượt sang phải + mờ dần hiện ra.</span>
+    <div class="nav-item"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item"><i class="fas fa-briefcase"></i><span>Work</span></div>
+    <div class="nav-item"><i class="fas fa-envelope"></i><span>Messages</span></div>
+    <div class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></div>
+  </div>
+</body>
+</html>

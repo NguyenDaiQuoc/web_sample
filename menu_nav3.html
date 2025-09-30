@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nav Menu - Scale</title>
+  <style>
+    body { background: #222; display: flex; justify-content: center; align-items: center; height: 100vh; }
+
+    .nav {
+      display: flex;
+      gap: 20px;
+      background: #333;
+      padding: 15px 20px;
+      border-radius: 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      color: white;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 22px;
+      margin-right: 5px;
+    }
+
+    .nav-item span {
+      transform: scale(0);
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+
+    .nav-item:hover span {
+      transform: scale(1);
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="nav">
+    <span>Khi hover, text sẽ phóng to từ nhỏ -> vừa như zoom.</span>
+    <div class="nav-item"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item"><i class="fas fa-briefcase"></i><span>Work</span></div>
+    <div class="nav-item"><i class="fas fa-envelope"></i><span>Messages</span></div>
+    <div class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aspect Ratio Demo</title>
+  <style>
+    /* Container có nền để dễ nhìn */
+    .wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .box {
+      background-color: #4caf50;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 8px;
+
+      /* Đây là dòng quan trọng */
+      aspect-ratio: 16 / 9; /* hoặc 1 / 1 cho hình vuông */
+    }
+
+    /* Responsive thử */
+    @media (max-width: 600px) {
+      .box {
+        aspect-ratio: 1 / 1; /* nhỏ hơn thì chuyển sang vuông */
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Ví dụ CSS aspect-ratio</h1>
+  <div class="wrapper">
+    <div class="box">16:9</div>
+    <div class="box">16:9</div>
+    <div class="box">16:9</div>
+  </div>
+</body>
+</html>

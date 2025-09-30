@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transform Hover Demo</title>
+  <style>
+    body {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px;
+      font-family: "Poppins", sans-serif;
+      background: #f7f7f7;
+    }
+
+    .box {
+      width: 120px;
+      height: 120px;
+      background: #5b13b9;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 8px;
+      transition: all 0.6s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    /* --- SCALE --- */
+    .scale:hover      { transform: scale(1.5); }
+    .scale-x:hover    { transform: scaleX(1.8); }
+    .scale-y:hover    { transform: scaleY(1.8); }
+
+    /* --- ROTATE --- */
+    .rotate:hover     { transform: rotate(45deg); }
+    .rotate-x:hover   { transform: rotateX(60deg); }
+    .rotate-y:hover   { transform: rotateY(60deg); }
+    .rotate-z:hover   { transform: rotateZ(45deg); }
+
+    /* --- TRANSLATE --- */
+    .translate:hover      { transform: translate(40px, -30px); }
+    .translate-x:hover    { transform: translateX(50px); }
+    .translate-y:hover    { transform: translateY(50px); }
+
+    /* --- SKEW --- */
+    .skew:hover       { transform: skew(20deg, 10deg); }
+    .skew-x:hover     { transform: skewX(25deg); }
+    .skew-y:hover     { transform: skewY(25deg); }
+
+    /* --- AUTO --- */
+    .auto-rotate {
+      animation: spin 3s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .auto-scale {
+      animation: scaling 2s ease-in-out infinite alternate;
+    }
+    @keyframes scaling {
+      from { transform: scale(1); }
+      to   { transform: scale(1.5); }
+    }
+
+    .auto-color {
+      animation: colorShift 3s linear infinite alternate;
+    }
+    @keyframes colorShift {
+      0%   { background: #5b13b9; }
+      50%  { background: #13b95b; }
+      100% { background: #b91313; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Scale -->
+  <div class="box scale">Scale</div>
+  <div class="box scale-x">ScaleX</div>
+  <div class="box scale-y">ScaleY</div>
+
+  <!-- Rotate -->
+  <div class="box rotate">Rotate</div>
+  <div class="box rotate-x">RotateX</div>
+  <div class="box rotate-y">RotateY</div>
+  <div class="box rotate-z">RotateZ</div>
+
+  <!-- Translate -->
+  <div class="box translate">Translate</div>
+  <div class="box translate-x">TranslateX</div>
+  <div class="box translate-y">TranslateY</div>
+
+  <!-- Skew -->
+  <div class="box skew">Skew</div>
+  <div class="box skew-x">SkewX</div>
+  <div class="box skew-y">SkewY</div>
+
+  <!-- Auto Animations -->
+  <div class="box auto-rotate">Auto Rotate</div>
+  <div class="box auto-scale">Auto Scale</div>
+  <div class="box auto-color">Auto Color</div>
+</body>
+</html>

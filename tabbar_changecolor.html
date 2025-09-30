@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Floating Nav Multi Colors</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.4s ease;
+    }
+
+    /* --- Thanh nav container --- */
+    .nav {
+      display: flex;
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 40px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      gap: 20px;
+      z-index: 2;
+    }
+
+    /* --- Icon item --- */
+    .nav-item {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    /* Hover chỉ đổi màu nav-item */
+    .nav-item.home:hover { background: #e53935; color: #fff; }
+    .nav-item.profile:hover { background: #1e88e5; color: #fff; }
+    .nav-item.message:hover { background: #43a047; color: #fff; }
+    .nav-item.help:hover { background: #fdd835; color: #333; }
+    .nav-item.settings:hover { background: #8e24aa; color: #fff; }
+
+    /* --- Tooltip text --- */
+    .nav-item::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 5px 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      opacity: 0;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .nav-item:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav">
+    <div class="nav-item home" data-tooltip="Home">🏠</div>
+    <div class="nav-item profile" data-tooltip="Profile">👤</div>
+    <div class="nav-item message" data-tooltip="Message">💬</div>
+    <div class="nav-item help" data-tooltip="Help">❓</div>
+    <div class="nav-item settings" data-tooltip="Settings">⚙️</div>
+  </div>
+
+  <script>
+    const body = document.querySelector("body");
+
+    const items = [
+      { selector: ".home", color: "#ffcccc" },    // đỏ nhạt
+      { selector: ".profile", color: "#cce0ff" }, // xanh dương nhạt
+      { selector: ".message", color: "#d0f2d0" }, // xanh lá nhạt
+      { selector: ".help", color: "#fff9c4" },    // vàng nhạt
+      { selector: ".settings", color: "#f3e5f5" } // tím nhạt
+    ];
+
+    items.forEach(item => {
+      const el = document.querySelector(item.selector);
+      el.addEventListener("mouseenter", () => {
+        body.style.backgroundColor = item.color;
+      });
+      el.addEventListener("mouseleave", () => {
+        body.style.backgroundColor = "#fff";
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Login Form</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #0a1a24;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      position: relative;
+      background: #111;
+      padding: 40px 30px;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.6);
+      transition: 0.4s;
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: white;
+      transition: 0.4s;
+    }
+
+    .input-box {
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 10px 40px 10px 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid gray;
+      outline: none;
+      color: white;
+      font-size: 14px;
+      transition: 0.4s;
+    }
+
+    .input-box span {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: gray;
+      transition: 0.4s;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.4s;
+    }
+
+    .register {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 13px;
+      color: white;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: absolute;
+      top: 20px;
+      right: -80px;
+      width: 60px;
+      height: 30px;
+      background: #333;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      transition: 0.4s;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.6);
+    }
+
+    .toggle .circle {
+      width: 24px;
+      height: 24px;
+      background: #777;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      color: white;
+      transition: 0.4s;
+    }
+
+    /* Neon active mode */
+    .container.active {
+      background: #0d0d0d;
+      box-shadow: 0 0 25px cyan, 0 0 50px cyan;
+    }
+
+    .container.active h2,
+    .container.active .options,
+    .container.active .register {
+      color: cyan;
+      text-shadow: 0 0 8px cyan;
+    }
+
+    .container.active input {
+      border-bottom: 2px solid cyan;
+      color: cyan;
+    }
+
+    .container.active span {
+      color: cyan;
+      text-shadow: 0 0 8px cyan;
+    }
+
+    .container.active .btn {
+      background: cyan;
+      color: black;
+      box-shadow: 0 0 15px cyan;
+    }
+
+    .toggle.active {
+      background: cyan;
+    }
+
+    .toggle.active .circle {
+      transform: translateX(30px);
+      background: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginBox">
+    <h2>Login</h2>
+    <div class="input-box">
+      <input type="text" placeholder="Email">
+      <span>✉</span>
+    </div>
+    <div class="input-box">
+      <input type="password" placeholder="Password">
+      <span>🔒</span>
+    </div>
+    <div class="options">
+      <label><input type="checkbox"> Remember me</label>
+      <a href="#">Forgot Password?</a>
+    </div>
+    <button class="btn">Login</button>
+    <div class="register">
+      Don’t have an account? <b>Register</b>
+    </div>
+    <!-- Toggle -->
+    <div class="toggle" id="toggleBtn">
+      <div class="circle">☀</div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("toggleBtn");
+    const container = document.getElementById("loginBox");
+    const circle = toggle.querySelector(".circle");
+
+    // Âm thanh click (tùy chọn)
+    const clickSound = new Audio("https://www.soundjay.com/buttons/button-16.mp3");
+
+    toggle.addEventListener("click", () => {
+      toggle.classList.toggle("active");
+      container.classList.toggle("active");
+      circle.textContent = toggle.classList.contains("active") ? "🌙" : "☀";
+      clickSound.currentTime = 0;
+      clickSound.play();
+    });
+  </script>
+</body>
+</html>

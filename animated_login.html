@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Animated Login </title>
+  <style>
+    body {
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#0d0d16;
+      font-family:Inter, "Poppins", system-ui, sans-serif;
+    }
+
+    /* ---------- LOGIN BOX ---------- */
+    .login-box {
+      position: relative;
+      width: 230px;
+      height: 84px;
+      background: #1c1c28;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      cursor: pointer;
+      overflow: hidden;
+      z-index: 10;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+
+      transition: all 0.4s ease;
+    }
+
+    .login-box span {
+      font-size: 18px;
+      font-weight: 700;
+      z-index: 2;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      transition: opacity 0.25s ease;
+    }
+    .login-box span::before { content: "🔊"; } 
+    .login-box span::after  { content: "❤"; }  
+
+    /* neon border effect */
+    .login-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 2px;
+      border-radius: 12px;
+      background: linear-gradient(90deg,#ff2d6d,#19f6e3,#ff2d6d);
+      background-size: 200% 200%;
+      animation: border-anim 4s linear infinite;
+      -webkit-mask: 
+        linear-gradient(#000 0 0) content-box, 
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      z-index: 1;
+      pointer-events:none;
+    }
+    @keyframes border-anim {
+      0%{ background-position: 0% 50% }
+      50%{ background-position: 100% 50% }
+      100%{ background-position: 0% 50% }
+    }
+
+    /* ---------- Expanded state ---------- */
+    .login-box.expanded {
+      width: 360px;
+      height: 420px;
+      border-radius: 16px;
+      cursor: default;
+    }
+    .login-box.expanded span {
+      opacity: 0; /* ẩn chữ LOGIN khi expand */
+    }
+
+    /* ---------- LOGIN FORM INSIDE ---------- */
+    .login-form {
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      position: absolute;
+      inset: 0;
+      padding: 28px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:14px;
+      color:#ddd;
+    }
+    .login-box.expanded .login-form {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .login-form h2{
+      margin:0;
+      text-align:center;
+      color:#ff2d6d;
+      letter-spacing:3px;
+    }
+    .field {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding:10px 14px;
+      border-radius:24px;
+    }
+    .field input{
+      border:0;
+      background:transparent;
+      outline:none;
+      color:#eee;
+      width:100%;
+      font-size:14px;
+    }
+    .btn {
+      margin-top:6px;
+      border:0;
+      background: linear-gradient(90deg,#00e6ff,#00b0d8);
+      color:#041218;
+      padding:12px;
+      border-radius:22px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .extra {
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      margin-top:4px;
+    }
+    .extra a { text-decoration:none; color:#aaa }
+    .extra a.signup { color:#ff2d6d; font-weight:600 }
+
+    .close-x {
+      position:absolute;
+      top:8px;
+      right:8px;
+      background:#ff2d6d;
+      color:#fff;
+      width:28px;height:28px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.5);
+      font-weight:700;
+      z-index:5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- login box -->
+  <div class="login-box" id="loginBox">
+    <span>LOGIN</span>
+    <div class="login-form">
+      <div class="close-x" id="closeBtn">×</div>
+      <h2>LOGIN</h2>
+      <div class="field">
+        <input type="text" placeholder="Username">
+      </div>
+      <div class="field">
+        <input type="password" placeholder="Password">
+      </div>
+      <button class="btn">Sign in</button>
+      <div class="extra">
+        <a href="#" class="forgot">Forgot Password</a>
+        <a href="#" class="signup">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loginBox = document.getElementById('loginBox');
+    const closeBtn = document.getElementById('closeBtn');
+
+    loginBox.addEventListener('click', () => {
+      if (!loginBox.classList.contains('expanded')) {
+        loginBox.classList.add('expanded');
+      }
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      loginBox.classList.remove('expanded');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') loginBox.classList.remove('expanded');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (loginBox.classList.contains('expanded') && !loginBox.contains(e.target)) {
+        loginBox.classList.remove('expanded');
+      }
+    });
+  </script>
+</body>
+</html>

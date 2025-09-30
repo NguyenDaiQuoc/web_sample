@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creative Menu Effect</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 80px;
+      background: #f6f6f6;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    ul li {
+      position: relative;
+    }
+
+    ul li a {
+      text-decoration: none;
+      color: #000;
+      font-size: 18px;
+      padding: 8px 20px;
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      transition: color 0.3s ease;
+    }
+
+    /* background fade-in */
+    ul li a::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: crimson;
+      opacity: 0;
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      z-index: -1;
+    }
+
+    /* line trên */
+    ul li a::after,
+    ul li a span::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #fff;
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    ul li a::after {
+      top: 0;
+      transform-origin: center;
+    }
+
+    ul li a span::before {
+      bottom: 0;
+      transform-origin: center;
+    }
+
+    /* hover effect */
+    ul li a:hover {
+      color: #fff;
+    }
+
+    ul li a:hover::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    ul li a:hover::after,
+    ul li a:hover span::before {
+      transform: scaleX(1);
+    }
+  </style>
+</head>
+<body>
+  <h2 style="color: orangered;">Creative Menu Effect</h2>
+  <ul>
+    <li><a href="#"><span>HOME</span></a></li>
+    <li><a href="#"><span>ABOUT</span></a></li>
+    <li><a href="#"><span>SERVICES</span></a></li>
+    <li><a href="#"><span>TEAM</span></a></li>
+    <li><a href="#"><span>CONTACT</span></a></li>
+  </ul>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Hover Effect</title>
+  <style>
+    body {
+      background: #f5f8fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* --- Nút tổng thể --- */
+    .btn {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      transition: color 0.3s ease;
+    }
+
+    /* --- Vòng tròn icon --- */
+    .btn .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #222;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      z-index: 2; /* giữ icon nổi trên nền */
+    }
+
+    /* --- Text --- */
+    .btn span {
+      color: #222;
+      z-index: 2; /* giữ text nổi */
+      transition: color 0.3s ease;
+    }
+
+    /* --- Nền hiệu ứng khi hover --- */
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40px;  /* lúc đầu chỉ bằng vòng tròn */
+      height: 100%;
+      background: #222;
+      transition: width 0.4s ease;
+      border-radius: 30px;
+      z-index: 1;
+    }
+
+    /* --- Hover: nền trải rộng + text thành trắng --- */
+    .btn:hover::before {
+      width: 100%;
+    }
+
+    .btn:hover span {
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn">
+    <div class="icon">➜</div>
+    <span>LEARN MORE</span>
+  </button>
+
+</body>
+</html>

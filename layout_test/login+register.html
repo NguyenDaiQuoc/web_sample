@@ -1,0 +1,289 @@
+<?php
+session_start();
+include("admincp/config/config.php"); // sửa đường dẫn nếu cần
+
+$login_success = null;
+$register_success = null;
+$remember_checked = false;
+
+// --- AUTO LOGIN nếu có cookie (remember) ---
+if (!isset($_SESSION['idkhachhang']) && isset($_COOKIE['remember_email']) && isset($_COOKIE['remember_pass'])) {
+    $cookie_email = mysqli_real_escape_string($mysqli, $_COOKIE['remember_email']);
+    $cookie_pass  = mysqli_real_escape_string($mysqli, $_COOKIE['remember_pass']); // đây là MD5 password
+    $q = mysqli_query($mysqli, "SELECT * FROM tbl_dangky WHERE email = '$cookie_email' AND matkhau = '$cookie_pass' AND trangthai = 1 LIMIT 1");
+    if ($q && mysqli_num_rows($q) > 0) {
+        $r = mysqli_fetch_array($q);
+        $_SESSION['dangky'] = $r['tenkhachhang'];
+        $_SESSION['email'] = $r['email'];
+        $_SESSION['idkhachhang'] = $r['iddangky'];
+        header("Location: index.php");
+        exit;
+    } else {
+        // xóa cookie không hợp lệ
+        setcookie("remember_email", "", time() - 3600, "/");
+        setcookie("remember_pass", "", time() - 3600, "/");
+    }
+}
+
+// --- XỬ LÝ LOGIN ---
+if (isset($_POST['dangNhap'])) {
+    $email = mysqli_real_escape_string($mysqli, trim($_POST['email']));
+    $plain_password = $_POST['matkhau'];
+    $matkhau = md5($plain_password);
+    $remember = isset($_POST['remember']) ? true : false;
+
+    $sql = "SELECT * FROM tbl_dangky WHERE email = '$email' AND matkhau = '$matkhau' AND trangthai = 1 LIMIT 1";
+    $query = mysqli_query($mysqli, $sql);
+
+    if ($query && mysqli_num_rows($query) > 0) {
+        $row = mysqli_fetch_array($query);
+        $_SESSION['dangky'] = $row['tenkhachhang'];
+        $_SESSION['email'] = $row['email'];
+        $_SESSION['idkhachhang'] = $row['iddangky'];
+
+        // Remember me: lưu cookie email + md5(password) trong 30 ngày
+        if ($remember) {
+            setcookie("remember_email", $email, time() + 60*60*24*30, "/");
+            setcookie("remember_pass", $matkhau, time() + 60*60*24*30, "/");
+        } else {
+            setcookie("remember_email", "", time() - 3600, "/");
+            setcookie("remember_pass", "", time() - 3600, "/");
+        }
+
+        header("Location: index.php");
+        exit;
+    } else {
+        $login_success = false;
+    }
+}
+
+// --- XỬ LÝ REGISTER ---
+if (isset($_POST['dangKy'])) {
+    $tenkhachhang = mysqli_real_escape_string($mysqli, trim($_POST['tenkhachhang']));
+    $email = mysqli_real_escape_string($mysqli, trim($_POST['email']));
+    $plain_pw = $_POST['matkhau'];
+
+    // Server-side validate password
+    $errors = [];
+    if (mb_strlen($plain_pw) < 8) $errors[] = "Mật khẩu phải >= 8 ký tự";
+    if (!preg_match('/[A-Z]/', $plain_pw)) $errors[] = "Cần ít nhất 1 chữ hoa";
+    if (!preg_match('/[a-z]/', $plain_pw)) $errors[] = "Cần ít nhất 1 chữ thường";
+    if (!preg_match('/[.@!~,_;]/', $plain_pw)) $errors[] = "Cần ít nhất 1 ký tự đặc biệt (. @ ! ~ , _ ; )";
+
+    if (!empty($errors)) {
+        $register_success = implode("; ", $errors);
+    } else {
+        $check = mysqli_query($mysqli, "SELECT * FROM tbl_dangky WHERE email = '$email' LIMIT 1");
+        if ($check && mysqli_num_rows($check) > 0) {
+            $register_success = "exist";
+        } else {
+            $matkhau = md5($plain_pw);
+            $sql = "INSERT INTO tbl_dangky(tenkhachhang,email,matkhau,trangthai) VALUES('$tenkhachhang','$email','$matkhau',1)";
+            if (mysqli_query($mysqli, $sql)) {
+                $register_success = true;
+            } else {
+                $register_success = "error";
+            }
+        }
+    }
+}
+
+// Lấy email cookie nếu có để prefill
+$remembered_email = isset($_COOKIE['remember_email']) ? htmlspecialchars($_COOKIE['remember_email']) : "";
+$remembered_checked = $remembered_email ? 'checked' : '';
+?>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Đăng nhập / Đăng ký</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tinh chỉnh thêm */
+    .input-valid { color: #16a34a; }   /* green-600 */
+    .input-invalid { color: #dc2626; } /* red-600 */
+    .forms-wrapper { transition: transform 0.7s cubic-bezier(.2,.9,.2,1); }
+    /* Khi mobile: bỏ translateX để không gây overflow */
+    @media (max-width: 767px) {
+      .forms-wrapper { transform: translateX(0) !important; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+<!-- OVERLAY modal (fixed) để không làm vỡ layout gốc -->
+<div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+  <div class="w-full max-w-5xl mx-4">
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden md:flex relative">
+      <!-- LEFT overlay panel: ảnh/gradient + giới thiệu -->
+      <div class="hidden md:flex md:w-1/2 items-center justify-center p-8 bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 text-white">
+        <div class="space-y-6 text-center px-6">
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=3b95b2f6b0f237b6df8ed5e0a0f9f5e6" alt="promo" class="w-48 h-48 object-cover rounded-xl mx-auto shadow-xl">
+          <h3 class="text-2xl font-bold">Chào mừng bạn đến với Tiệm Tạp Hóa</h3>
+          <p class="text-sm opacity-90">Mua sắm nhanh — giá tốt — giao hàng tận nơi. Đăng ký ngay để nhận coupon và theo dõi đơn hàng dễ dàng.</p>
+          <div class="flex justify-center gap-3">
+            <button onclick="showLogin()" class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition">Đăng nhập</button>
+            <button onclick="showRegister()" class="px-4 py-2 bg-white/30 rounded-lg hover:bg-white/40 transition">Đăng ký</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT forms area (slide) -->
+      <div class="w-full md:w-1/2 p-6 md:p-8 relative">
+        <!-- Close button -->
+        <button onclick="closeModal()" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">✕</button>
+
+        <!-- wrapper chứa 2 form (width 200%) và slide bằng transform -->
+        <div id="formsTrackWrapper" class="w-full overflow-hidden">
+          <div id="formsWrapper" class="flex w-[200%] forms-wrapper">
+            <!-- LOGIN (left half) -->
+            <div class="w-1/2 px-1 md:px-6 py-4">
+              <h2 class="text-2xl font-bold text-gray-800 mb-4">Đăng nhập</h2>
+              <form method="POST" class="space-y-4">
+                <div>
+                  <label class="block text-gray-600 text-sm">Email</label>
+                  <input tabindex="1" type="email" name="email" id="loginEmail" value="<?php echo $remembered_email;?>" required
+                         class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none">
+                </div>
+                <div>
+                  <label class="block text-gray-600 text-sm">Mật khẩu</label>
+                  <div class="relative">
+                    <input tabindex="2" type="password" name="matkhau" id="loginPassword" required
+                           class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <button type="button" onclick="togglePassword('loginPassword')" class="absolute right-3 top-3 text-gray-600">👁</button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <label class="flex items-center gap-2 text-sm">
+                    <input tabindex="3" type="checkbox" name="remember" <?php echo $remembered_checked;?>>
+                    Ghi nhớ đăng nhập
+                  </label>
+                  <a href="index.php?quanly=quenmatkhau" class="text-indigo-600 text-sm hover:underline">Quên mật khẩu?</a>
+                </div>
+
+                <?php if ($login_success === false): ?>
+                  <p class="text-red-500 text-sm text-center">Email hoặc mật khẩu không đúng.</p>
+                <?php endif; ?>
+
+                <button type="submit" name="dangNhap" class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">Đăng nhập</button>
+
+                <p class="text-sm text-center text-gray-600">Chưa có tài khoản? <button type="button" onclick="showRegister()" class="text-indigo-600 hover:underline">Đăng ký</button></p>
+              </form>
+            </div>
+
+            <!-- REGISTER (right half) -->
+            <div class="w-1/2 px-1 md:px-6 py-4 bg-gray-50">
+              <h2 class="text-2xl font-bold text-gray-800 mb-4">Tạo tài khoản mới</h2>
+              <form method="POST" id="registerForm" class="space-y-4">
+                <div>
+                  <label class="block text-gray-600 text-sm">Tên người dùng</label>
+                  <input tabindex="4" type="text" name="tenkhachhang" required
+                         class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none">
+                </div>
+                <div>
+                  <label class="block text-gray-600 text-sm">Email</label>
+                  <input tabindex="5" type="email" name="email" required
+                         class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none">
+                </div>
+                <div>
+                  <label class="block text-gray-600 text-sm">Mật khẩu</label>
+                  <div class="relative">
+                    <input tabindex="6" type="password" name="matkhau" id="regPassword" required
+                           class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <button type="button" onclick="togglePassword('regPassword')" class="absolute right-3 top-3 text-gray-600">👁</button>
+                  </div>
+                </div>
+
+                <!-- realtime checks -->
+                <div class="text-sm">
+                  <ul id="pwChecks" class="space-y-1">
+                    <li id="pw_len" class="input-invalid">❌ Tối thiểu 8 ký tự</li>
+                    <li id="pw_upper" class="input-invalid">❌ Có chữ hoa</li>
+                    <li id="pw_lower" class="input-invalid">❌ Có chữ thường</li>
+                    <li id="pw_special" class="input-invalid">❌ Có ký tự đặc biệt (. @ ! ~ , _ ; )</li>
+                  </ul>
+                </div>
+
+                <?php if ($register_success === "exist"): ?>
+                  <p class="text-red-500 text-sm">Email đã tồn tại.</p>
+                <?php elseif ($register_success === true): ?>
+                  <p class="text-green-600 text-sm">Đăng ký thành công! Vui lòng đăng nhập.</p>
+                <?php elseif (is_string($register_success) && $register_success !== "exist"): ?>
+                  <p class="text-red-500 text-sm"><?php echo htmlspecialchars($register_success); ?></p>
+                <?php endif; ?>
+
+                <button type="submit" name="dangKy" class="w-full py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition">Đăng ký</button>
+
+                <p class="text-sm text-center text-gray-600">Đã có tài khoản? <button type="button" onclick="showLogin()" class="text-indigo-600 hover:underline">Đăng nhập</button></p>
+              </form>
+            </div>
+          </div><!-- /formsWrapper -->
+        </div><!-- /formsTrackWrapper -->
+      </div><!-- /right area -->
+    </div><!-- /card -->
+  </div>
+</div>
+
+<script>
+  // Element refs
+  const formsWrapper = document.getElementById('formsWrapper');
+  const modal = document.getElementById('loginModal');
+
+  // Show register: slide left by 50%
+  function showRegister() {
+    if (window.innerWidth < 768) {
+      // mobile: just scroll to register (no slide)
+      // focus first input in register
+      document.querySelector('input[name="tenkhachhang"]').focus();
+      return;
+    }
+    formsWrapper.style.transform = 'translateX(-50%)';
+  }
+  function showLogin() {
+    formsWrapper.style.transform = 'translateX(0%)';
+  }
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  // On resize restore behavior: if mobile, remove transform
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < 768) {
+      formsWrapper.style.transform = 'translateX(0%)';
+    }
+  });
+
+  // toggle password visibility
+  function togglePassword(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.type = (el.type === 'password') ? 'text' : 'password';
+  }
+
+  // Realtime password checking for register
+  const regPw = document.getElementById('regPassword');
+  if (regPw) {
+    regPw.addEventListener('input', function() {
+      const v = this.value;
+      document.getElementById('pw_len').className = v.length >= 8 ? 'input-valid' : 'input-invalid';
+      document.getElementById('pw_upper').className = /[A-Z]/.test(v) ? 'input-valid' : 'input-invalid';
+      document.getElementById('pw_lower').className = /[a-z]/.test(v) ? 'input-valid' : 'input-invalid';
+      document.getElementById('pw_special').className = /[.@!~,_;]/.test(v) ? 'input-valid' : 'input-invalid';
+    });
+  }
+
+  // Accessibility: allow Esc to close modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Nếu cần, tự bật register nếu server trả về thông báo "đăng ký thành công"
+  <?php if ($register_success === true): ?>
+    // show login so user can login
+    showLogin();
+  <?php endif; ?>
+
+</script>
+</body>
+</html>

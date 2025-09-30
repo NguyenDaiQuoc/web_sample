@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Truck Animation with Sound</title>
+<style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #e0e7ef;
+}
+
+/* Button */
+.order-btn {
+  position: relative;
+  width: 260px;
+  height: 70px;
+  background: #111827;
+  border-radius: 50px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.order-btn span {
+  position: relative;
+  z-index: 5;
+  transition: opacity 0.3s;
+}
+
+/* Road lines */
+.road {
+  position: absolute;
+  top: 65%;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: repeating-linear-gradient(
+    to right,
+    transparent 0 20px,
+    #fff 20px 40px
+  );
+  transform: translateY(-50%);
+  opacity: 0;
+  animation: roadMove 0.8s linear infinite;
+  z-index: 1;
+}
+
+@keyframes roadMove {
+  from { background-position: 0 0; }
+  to   { background-position: -40px 0; }
+}
+
+/* Truck */
+.truck {
+  position: absolute;
+  left: -120px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  z-index: 2;
+  transition: left 3s ease-in-out;
+}
+
+/* Box (thùng hàng) */
+.box {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: #facc15;
+  border: 2px solid #eab308;
+  border-radius: 4px;
+  transition: transform 0.5s, opacity 0.5s;
+  z-index: 3;
+}
+
+/* Hiệu ứng rung cho thùng */
+@keyframes shake {
+  0%, 100% { transform: translateY(-50%) rotate(0deg); }
+  25% { transform: translateY(-50%) rotate(-8deg); }
+  50% { transform: translateY(-50%) rotate(8deg); }
+  75% { transform: translateY(-50%) rotate(-5deg); }
+}
+
+/* Truck body */
+.truck-body {
+  width: 80px;
+  height: 40px;
+  background: #3b82f6;
+  border-radius: 5px;
+  position: relative;
+}
+
+/* Cabin */
+.truck-body::before {
+  content: "";
+  position: absolute;
+  right: -28px;
+  top: 5px;
+  width: 28px;
+  height: 30px;
+  background: #f3f4f6;
+  border-radius: 5px;
+}
+
+/* Wheels */
+.wheel {
+  width: 14px;
+  height: 14px;
+  background: #000;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -7px;
+  animation: spin 0.5s linear infinite;
+}
+
+.wheel.left { left: 10px; }
+.wheel.right { right: 10px; }
+
+@keyframes spin {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
+
+/* Smoke */
+.smoke {
+  position: absolute;
+  left: -15px;
+  bottom: -10px;
+  width: 8px;
+  height: 8px;
+  background: rgba(200,200,200,0.6);
+  border-radius: 50%;
+  opacity: 0;
+  animation: puff 1s ease-out infinite;
+}
+
+@keyframes puff {
+  0% { transform: scale(0.5) translateY(0); opacity: 0.6; }
+  100% { transform: scale(2) translateY(-20px); opacity: 0; }
+}
+
+/* Dust */
+.dust {
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  width: 6px;
+  height: 6px;
+  background: rgba(180,140,90,0.6);
+  border-radius: 50%;
+  opacity: 0;
+  animation: dustFly 0.8s linear infinite;
+}
+
+@keyframes dustFly {
+  0%   { transform: scale(0.5) translateX(0) translateY(0); opacity: 0.8; }
+  50%  { transform: scale(1.2) translateX(-10px) translateY(-5px); opacity: 0.5; }
+  100% { transform: scale(1.5) translateX(-20px) translateY(-10px); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<button class="order-btn" id="orderBtn">
+  <span>ORDER</span>
+  <div class="road"></div>
+  <div class="truck">
+    <div class="truck-body">
+      <div class="wheel left"></div>
+      <div class="wheel right"></div>
+      <div class="smoke"></div>
+      <div class="dust"></div>
+    </div>
+  </div>
+  <div class="box"></div>
+</button>
+
+<!-- Âm thanh -->
+<audio id="engineIdle" src="https://actions.google.com/sounds/v1/vehicles/engine_idle.ogg" preload="auto"></audio>
+<audio id="engineDrive" src="https://actions.google.com/sounds/v1/transportation/truck_drive.ogg" preload="auto"></audio>
+
+<script>
+const btn = document.getElementById("orderBtn");
+const text = btn.querySelector("span");
+const truck = btn.querySelector(".truck");
+const box = btn.querySelector(".box");
+const road = btn.querySelector(".road");
+const dust = btn.querySelector(".dust");
+const engineIdle = document.getElementById("engineIdle");
+const engineDrive = document.getElementById("engineDrive");
+
+btn.addEventListener("click", () => {
+  text.style.opacity = "0";        
+  truck.style.opacity = "1";       
+  road.style.opacity = "1";        
+  engineIdle.play();               
+
+  // B1: xe tới gần thùng
+  setTimeout(() => {
+    truck.style.left = "80px";
+    box.style.animation = "shake 0.5s ease-in-out infinite";
+  }, 300);
+
+  // B2: lấy thùng
+  setTimeout(() => {
+    box.style.animation = "none";
+    box.style.transform = "translate(60px, -50%)";
+    box.style.opacity = "0";
+  }, 1300);
+
+  // B3: xe chạy, bụi hiện ra
+  setTimeout(() => {
+    engineIdle.pause();
+    engineIdle.currentTime = 0;
+    engineDrive.play();
+    dust.style.opacity = "1";
+    truck.style.left = "260px";
+  }, 1800);
+
+  // B4: reset
+  setTimeout(() => {
+    engineDrive.pause();
+    engineDrive.currentTime = 0;
+    truck.style.opacity = "0";
+    road.style.opacity = "0";
+    truck.style.left = "-120px";
+    box.style.opacity = "1";
+    box.style.transform = "translate(0, -50%)";
+    dust.style.opacity = "0";
+    text.innerText = "DONE ✅";
+    text.style.opacity = "1";
+  }, 4000);
+
+  // B5: trở lại ORDER
+  setTimeout(() => {
+    text.innerText = "ORDER";
+  }, 7000);
+});
+</script>
+
+</body>
+</html>

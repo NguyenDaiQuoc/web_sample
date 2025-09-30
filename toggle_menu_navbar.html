@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toggle Navbar</title>
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background: #f5f5f5;
+    }
+
+    /* Navbar */
+    nav {
+      background: #5b13b9;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 30px;
+    }
+
+    nav .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      transition: all 0.3s ease;
+    }
+
+    nav ul li {
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    nav ul li:hover {
+      color: #ff0;
+    }
+
+    /* --- TOGGLE BUTTON --- */
+    .toggle {
+      font-size: 24px;
+      cursor: pointer;
+      display: none; /* mặc định ẩn */
+    }
+
+    /* --- MOBILE --- */
+    @media (max-width: 768px) {
+      nav ul {
+        position: absolute;
+        top: 65px;
+        left: -100%;
+        flex-direction: column;
+        background: #5b13b9;
+        width: 100%;
+        text-align: center;
+        padding: 20px 0;
+      }
+      nav ul.active {
+        left: 0;
+      }
+
+      /* Toggle chỉ hiện ở mobile */
+      .toggle.mobile {
+        display: block;
+      }
+    }
+
+    /* --- DESKTOP TOGGLE --- */
+    @media (min-width: 769px) {
+      /* Menu luôn hiển thị ở desktop */
+      nav ul {
+        position: static;
+        flex-direction: row;
+        background: none;
+        width: auto;
+        padding: 0;
+      }
+
+      /* Toggle desktop hiện */
+      .toggle.desktop {
+        display: block;
+      }
+    }
+
+    /* Đổi màu menu khi ấn desktop toggle */
+    nav ul.colored li {
+      color: #ff0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">MyLogo</div>
+    <ul id="menu">
+      <li>Home</li>
+      <li>About</li>
+      <li>Services</li>
+      <li>Contact</li>
+    </ul>
+    <!-- Toggle cho mobile -->
+    <div class="toggle mobile" onclick="toggleMenu()">☰</div>
+    <!-- Toggle cho desktop -->
+    <div class="toggle desktop" onclick="toggleDesktop()">⚙️</div>
+  </nav>
+
+  <script>
+    const menu = document.getElementById("menu");
+
+    // Toggle cho mobile (ẩn/hiện menu)
+    function toggleMenu() {
+      menu.classList.toggle("active");
+    }
+
+    // Toggle cho desktop (không ẩn menu, chỉ đổi màu)
+    function toggleDesktop() {
+      menu.classList.toggle("colored");
+    }
+  </script>
+
+</body>
+</html>

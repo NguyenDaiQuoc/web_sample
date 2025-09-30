@@ -1,0 +1,264 @@
+<?php
+session_start();
+include("admincp/config/config.php");
+$registration_error = '';
+
+if (isset($_POST['dang_ky'])) {
+    $tenkhachhang = trim($_POST['tenkhachhang']);
+    $email = trim($_POST['email']);
+    $dienthoai = trim($_POST['dienthoai']);
+    $matkhau = $_POST['matkhau'];
+    $confirm = $_POST['confirm_matkhau'];
+    $diachi = trim($_POST['diachi']);
+
+    $check_email_query = mysqli_query($mysqli, "SELECT * FROM tbl_dangky WHERE email = '$email'");
+    if (mysqli_num_rows($check_email_query) > 0) {
+        $registration_error = "Email đã tồn tại!";
+    } elseif ($matkhau !== $confirm) {
+        $registration_error = "Mật khẩu xác nhận không trùng khớp!";
+    } else {
+        $hashed_password = md5($matkhau);
+        $trangthai = 1;
+        $insert_user_query = "INSERT INTO tbl_dangky(tenkhachhang,email,diachi,matkhau,dienthoai,trangthai)
+                            VALUES('$tenkhachhang','$email','$diachi','$hashed_password','$dienthoai','$trangthai')";
+        if (mysqli_query($mysqli, $insert_user_query)) {
+            echo "<script>alert('Đăng ký thành công! Bạn có thể đăng nhập ngay.'); window.location='index.php?quanly=dangnhap';</script>";
+        } else {
+            $registration_error = "Lỗi đăng ký: " . mysqli_error($mysqli);
+        }
+    }
+}
+?>
+
+<style>
+.register_container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.overlay {
+    flex: 1;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px;
+    text-align: center;
+    animation: slideInLeft 0.8s ease;
+}
+.overlay img {
+    width: 200px;
+    margin-bottom: 20px;
+}
+.form_box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: slideInRight 0.8s ease;
+}
+.form_content {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+.input_box {
+    position: relative;
+    margin: 15px 0;
+}
+.input_box input {
+    width: 100%;
+    padding: 12px 40px 12px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+.input_box input:focus {
+    border-color: #4facfe;
+}
+.input_box .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.check_icon {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+}
+.success { color: green; }
+.error { color: red; }
+#strengthBar {
+    height: 8px;
+    width: 100%;
+    background: #eee;
+    border-radius: 6px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+#strengthBar div {
+    height: 100%;
+    width: 0%;
+    background: red;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+#strengthText {
+    font-size: 13px;
+    margin-top: 5px;
+    color: #666;
+}
+.login_form_btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.login_form_btn:hover {
+    transform: scale(1.05);
+}
+@keyframes slideInLeft {
+    from {transform: translateX(-100%); opacity: 0;}
+    to {transform: translateX(0); opacity: 1;}
+}
+@keyframes slideInRight {
+    from {transform: translateX(100%); opacity: 0;}
+    to {transform: translateX(0); opacity: 1;}
+}
+</style>
+
+<div class="register_container">
+    <div class="overlay">
+        <img src="uploads/banner.png" alt="Intro">
+        <h2>Chào mừng bạn!</h2>
+        <p>Đăng ký ngay để nhận ưu đãi và trải nghiệm mua sắm tiện lợi tại cửa hàng.</p>
+    </div>
+
+    <div class="form_box">
+        <form method="POST" class="form_content" id="registerForm">
+            <h2 style="text-align:center; margin-bottom:20px;">Đăng ký</h2>
+            
+            <div class="input_box">
+                <input type="text" name="tenkhachhang" placeholder="Họ và tên" required tabindex="1">
+            </div>
+            <div class="input_box">
+                <input type="text" name="email" placeholder="Email" required tabindex="2">
+            </div>
+            <div class="input_box">
+                <input type="text" name="dienthoai" placeholder="Số điện thoại" required tabindex="3">
+            </div>
+            <div class="input_box">
+                <input type="password" id="matkhau" name="matkhau" placeholder="Mật khẩu" required tabindex="4">
+                <span class="toggle-password" onclick="togglePassword('matkhau', this)">👁</span>
+                <div id="strengthBar"><div></div></div>
+                <div id="strengthText">Mật khẩu phải có ít nhất 8 ký tự, gồm chữ thường, chữ hoa và ký tự đặc biệt</div>
+            </div>
+            <div class="input_box">
+                <input type="password" id="confirm_matkhau" name="confirm_matkhau" placeholder="Xác nhận mật khẩu" required tabindex="5">
+                <span id="confirm_icon" class="check_icon"></span>
+                <span class="toggle-password" onclick="togglePassword('confirm_matkhau', this)">👁</span>
+            </div>
+            <div class="input_box">
+                <input type="text" name="diachi" placeholder="Địa chỉ" required tabindex="6">
+            </div>
+            <button type="submit" name="dang_ky" class="login_form_btn">Đăng ký</button>
+            <p style="text-align:center; margin-top:15px;">Đã có tài khoản? <a href="index.php?quanly=dangnhap">Đăng nhập</a></p>
+
+            <?php if (!empty($registration_error)) { ?>
+                <div style="color:red; text-align:center; margin-top:10px;">
+                    <?php echo $registration_error; ?>
+                </div>
+            <?php } ?>
+        </form>
+    </div>
+</div>
+
+<script>
+function togglePassword(id, el) {
+    var input = document.getElementById(id);
+    if (input.type === "password") {
+        input.type = "text";
+        el.textContent = "🙈";
+    } else {
+        input.type = "password";
+        el.textContent = "👁";
+    }
+}
+
+// Check mật khẩu liên tục
+document.getElementById('confirm_matkhau').addEventListener('input', function() {
+    var pass = document.getElementById('matkhau').value;
+    var confirm = this.value;
+    var icon = document.getElementById('confirm_icon');
+    if (confirm === '') {
+        icon.textContent = '';
+    } else if (confirm === pass) {
+        icon.textContent = '✔';
+        icon.className = 'check_icon success';
+    } else {
+        icon.textContent = '✘';
+        icon.className = 'check_icon error';
+    }
+});
+
+// Strength meter
+document.getElementById('matkhau').addEventListener('input', function() {
+    var value = this.value;
+    var bar = document.querySelector('#strengthBar div');
+    var text = document.getElementById('strengthText');
+    var strength = 0;
+
+    if (value.length >= 8) strength++;
+    if (/[a-z]/.test(value)) strength++;
+    if (/[A-Z]/.test(value)) strength++;
+    if (/[0-9]/.test(value)) strength++;
+    if (/[!@~_\-,.]/.test(value)) strength++;
+
+    switch(strength) {
+        case 0:
+        case 1:
+            bar.style.width = "20%";
+            bar.style.background = "red";
+            text.textContent = "Mật khẩu rất yếu";
+            break;
+        case 2:
+            bar.style.width = "40%";
+            bar.style.background = "orange";
+            text.textContent = "Mật khẩu yếu";
+            break;
+        case 3:
+            bar.style.width = "60%";
+            bar.style.background = "gold";
+            text.textContent = "Mật khẩu trung bình";
+            break;
+        case 4:
+            bar.style.width = "80%";
+            bar.style.background = "#4caf50";
+            text.textContent = "Mật khẩu mạnh";
+            break;
+        case 5:
+            bar.style.width = "100%";
+            bar.style.background = "green";
+            text.textContent = "Mật khẩu rất mạnh";
+            break;
+    }
+});
+</script>
